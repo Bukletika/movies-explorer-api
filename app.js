@@ -14,8 +14,6 @@ const { errors } = require('celebrate');
 const limiter = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { urlMongoDB } = require('./utils/constants');
-
 const router = require('./routes');
 
 // Слушаем 3000 порт
@@ -25,8 +23,10 @@ app.use(cors());
 
 app.use(helmet());
 
+const { DB_CONN } = process.env;
+
 // Подключаемся к серверу mongo
-mongoose.connect(urlMongoDB, {
+mongoose.connect(DB_CONN, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,

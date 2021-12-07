@@ -8,42 +8,25 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 const Error400 = require('../errors/Error400');
 const Error404 = require('../errors/Error404');
 const Error409 = require('../errors/Error409');
-const Error401 = require('../errors/Error401');
 
 const {
-  msgIncorrectAuthorization,
   msgUserExists,
   msgNotUserById,
   msgFalseProfileData,
 } = require('../utils/constants');
 
-// eslint-disable-next-line consistent-return
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findOne({ email }).select('+password')
-    // eslint-disable-next-line consistent-return
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return next(new Error401(msgIncorrectAuthorization));
-      }
+      jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' }, (err, token) => {
+        if (err) {
+          next(err);
+        }
 
-      bcrypt.compare(password, user.password)
-        // eslint-disable-next-line consistent-return
-        .then((matched) => {
-          if (!matched) {
-            return next(new Error401(msgIncorrectAuthorization));
-          }
-
-          jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' }, (err, token) => {
-            if (err) {
-              next(err);
-            }
-
-            return res.send({ token });
-          });
-        })
-        .catch(next);
+        return res.send({ token });
+      });
     })
     .catch(next);
 };
