@@ -1,9 +1,6 @@
 // Регулярное выражение для проверки ссылок
 const linkTest = /(https?:\/\/)(w{3}\.)?[\w-]+(\.[\w-])+[\w.!*=%~?.,:\\+/@-]+#?/;
 
-// Адрес базы данных
-const urlMongoDB = 'mongodb://localhost:27017/moviesdb';
-
 // Сообщения
 const msgNeedAuthorization = 'Необходима авторизация';
 const msgNotFound = 'Ресурс не найден';
